@@ -1,4 +1,6 @@
-using HotelListing.ServiceExtensions;
+using AutoMapper;
+using HotelListing.Configurations;
+using HotelListing.Extensions;
 using Serilog;
 using Serilog.Events;
 
@@ -12,6 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSerilog();
 builder.Services.ConfigureCors();
+builder.Services.ConfigureDbContext(builder.Configuration);
+builder.Services.AddAutoMapper(typeof(MapperInitializer));
 
 Log.Logger = new LoggerConfiguration()
 	.WriteTo.File(path: "C:\\Users\\Oks\\CODEBASE\\My_JS\\C#\\C# PROJECTS\\ISLANDman\\HotelListing\\HotelListing\\bin\\Debug\\net7.0\\logs\\log-.txt",
