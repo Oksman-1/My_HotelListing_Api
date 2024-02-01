@@ -47,7 +47,7 @@ public class CountryController : ControllerBase
 	{
 		try
 		{
-			var country = await _unitOfWork.Countries.Get(q => q.Id.Equals(id), new List<string> { "Hotels"});
+			var country = await _unitOfWork.Countries.Get(q => q.Id.Equals(id), new List<string> {"Hotels"});
 			var result = _mapper.Map<CountryDto>(country);
 			return Ok(result);
 		}

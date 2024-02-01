@@ -3,6 +3,7 @@ using HotelListing.Configurations;
 using HotelListing.Extensions;
 using HotelListing.Repository.GenericRepository;
 using HotelListing.Repository.RepositoryContracts;
+using HotelListing.Services;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -22,15 +23,21 @@ builder.Services.ConfigureCors();
 builder.Services.ConfigureDbContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MapperInitializer));
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddAuthentication();	
+builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.AddScoped<IAuthManager, AuthManager>();
 
 
-
+//Configuring Serilog
 Log.Logger = new LoggerConfiguration()
-	.WriteTo.File(path: "C:\\Users\\Oks\\CODEBASE\\My_JS\\C#\\C# PROJECTS\\ISLANDman\\HotelListing\\HotelListing\\bin\\Debug\\net7.0\\logs\\log-.txt",
+	.WriteTo.File(path: "C:\\Users\\Oks\\CODEBASE\\My_JS\\C#\\C# PROJECTS\\ISLANDman\\My_HotelListing\\My_HotelListing\\bin\\Debug\\net6.0\\Logs\\log-.txt",
 				  outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
 				  rollingInterval: RollingInterval.Day,
 				  restrictedToMinimumLevel:LogEventLevel.Information
 	).CreateLogger();
+
+
 
 var app = builder.Build();
 
@@ -43,8 +50,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");	
+app.UseCors("AllowAll");
 
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

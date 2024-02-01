@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HotelListing.Models;
 using HotelListing.Repository.RepositoryContracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelListing.Controllers;
@@ -40,7 +41,7 @@ public class HotelController : ControllerBase
 
 	}
 
-
+	[Authorize]
 	[HttpGet("id:int")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
