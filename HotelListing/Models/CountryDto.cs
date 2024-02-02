@@ -14,6 +14,10 @@ public class CreateCountryDto
 	public string? ShortName { get; set; }
 }
 
+public class UpdateCountryDto : CreateCountryDto
+{
+	public IList<UpdateHotelDto>? Hotels { get; set; }
+}
 
 public class CountryDto : CreateCountryDto
 {

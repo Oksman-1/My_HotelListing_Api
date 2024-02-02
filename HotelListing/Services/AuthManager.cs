@@ -35,10 +35,11 @@ public class AuthManager : IAuthManager
 
 		var token = new JwtSecurityToken
 			(
-				issuer: jwtSettings.GetSection("validIssuer").Value,
+				issuer: jwtSettings.GetSection("Issuer").Value,
 				claims: claims,
 				expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings.GetSection("lifetime").Value)),
-				signingCredentials: signingCredentials
+				signingCredentials: signingCredentials,
+				audience: jwtSettings.GetSection("validAudience").Value
 			);
 
 		return token;	

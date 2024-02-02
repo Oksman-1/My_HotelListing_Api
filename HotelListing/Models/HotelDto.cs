@@ -23,6 +23,11 @@ public class CreateHotelDto
 	
 }
 
+public class UpdateHotelDto : CreateHotelDto
+{
+
+}
+
 
 public class HotelDto : CreateHotelDto
 {

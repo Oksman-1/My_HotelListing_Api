@@ -53,6 +53,7 @@ public static class ServiceExtensions
 					ValidateIssuerSigningKey = true,
 					ValidIssuer = jwtSettings.GetSection("Issuer").Value,
 					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+					ValidAudience = jwtSettings.GetSection("validAudience").Value
 				};
 			});
 	}

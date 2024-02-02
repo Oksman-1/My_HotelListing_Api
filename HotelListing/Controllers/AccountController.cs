@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelListing.Controllers;
 
+[Route("api/account")]
+[ApiController]
 public class AccountController : ControllerBase
 {
 	private readonly UserManager<ApiUser> _userManager;	
