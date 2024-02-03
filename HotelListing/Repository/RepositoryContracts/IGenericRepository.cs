@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using HotelListing.Models;
+using System.Linq.Expressions;
+using X.PagedList;
 
 namespace HotelListing.Repository.RepositoryContracts;
 
@@ -9,7 +11,9 @@ public interface IGenericRepository<T> where T : class
         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
         List<string> includes = null);
 
-    Task<T> Get(Expression<Func<T, bool>> expression, List<string> includes = null);
+	public Task<IPagedList<T>> GetPagedList(RequestParams requestParams, List<string> includes = null);
+
+  Task<T> Get(Expression<Func<T, bool>> expression, List<string> includes = null);
 
     Task Insert(T entity);
 

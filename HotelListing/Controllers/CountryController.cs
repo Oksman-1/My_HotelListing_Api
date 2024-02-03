@@ -2,12 +2,14 @@
 using HotelListing.Data;
 using HotelListing.Models;
 using HotelListing.Repository.RepositoryContracts;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 
 namespace HotelListing.Controllers;
 
+//[ApiVersion("1.0")]
 [Route("api/Country")]
 [ApiController]
 public class CountryController : ControllerBase
@@ -25,42 +27,34 @@ public class CountryController : ControllerBase
 	}
 
 	[HttpGet]
+	//[ResponseCache(CacheProfileName = "120SecondsDuration")]
+	[HttpCacheExpiration(CacheLocation = CacheLocation.Public, MaxAge = 60)]
+	[HttpCacheValidation(MustRevalidate = false)]	
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-	public async Task<IActionResult> GetCountries()
+	public async Task<IActionResult> GetCountries([FromQuery] RequestParams requestParams)
 	{
-		try
-		{
-			var countries = await _unitOfWork.Countries.GetAll();
+		
+			var countries = await _unitOfWork.Countries.GetPagedList(requestParams, null);
 			var results = _mapper.Map<IList<CountryDto>>(countries);
 			return Ok(results);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, $"Something Went Wrong in the {nameof(GetCountries)}");	
-			return StatusCode(500, "Internal Server Error. Please Try Again Later.");	
-		}
+		
 				
 	}
 
-	[HttpGet("id:int", Name = "GetCountry")]
+	[HttpGet("{id:int}", Name = "GetCountry")]
+	//[ResponseCache(CacheProfileName = "120SecondsDuration")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 	public async Task<IActionResult> GetCountry(int id)
 	{
-		try
-		{
+		
 			var country = await _unitOfWork.Countries.Get(q => q.Id.Equals(id), new List<string> {"Hotels"});
 			var result = _mapper.Map<CountryDto>(country);
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, $"Something Went Wrong in the {nameof(GetCountry)}");
-			return StatusCode(500, "Internal Server Error. Please Try Again Later.");
-		}
+			return Ok(result);	
 
 	}
+
 
 	[Authorize(Roles = "Administrator")]
 	[HttpPost]
@@ -74,20 +68,13 @@ public class CountryController : ControllerBase
 			_logger.LogError($"Invalid Post Attempt in {nameof(CreateCountry)}");
 			return BadRequest(ModelState);
 		}
-		try
-		{
+		
 			var country = _mapper.Map<Country>(countryDto);
 			await _unitOfWork.Countries.Insert(country);
 			await _unitOfWork.Save();
 
 			return CreatedAtRoute("GetCountry", new { id = country.Id }, country);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, $"Something Went Wrong in the {nameof(CreateCountry)}");
-			return StatusCode(500, "Internal Server Error. Please Try Again Later.");
-		}
-
+		
 	}
 
 	[Authorize(Roles = "Administrator")]
@@ -102,8 +89,7 @@ public class CountryController : ControllerBase
 			_logger.LogError($"Invalid UPDATE Attempt in {nameof(UpdateCountry)}");
 			return BadRequest(ModelState);
 		}
-		try
-		{
+		
 			var country = await _unitOfWork.Countries.Get(q => q.Id == id);
 			if (country == null)
 			{
@@ -115,15 +101,10 @@ public class CountryController : ControllerBase
 			_unitOfWork.Countries.Update(country);
 			await _unitOfWork.Save();
 
-			return NoContent();
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, $"Something Went Wrong in the {nameof(UpdateCountry)}");
-			return StatusCode(500, "Internal Server Error. Please Try Again Later.");
-		}
+			return NoContent();	
 
 	}
+
 
 	[Authorize]
 	[HttpDelete("{id:int}")]
@@ -138,8 +119,7 @@ public class CountryController : ControllerBase
 			return BadRequest();
 		}
 
-		try
-		{
+		
 			var country = await _unitOfWork.Countries.Get(q => q.Id == id);
 			if (country == null)
 			{
@@ -151,11 +131,6 @@ public class CountryController : ControllerBase
 			await _unitOfWork.Save();
 
 			return NoContent();
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, $"Something Went Wrong in the {nameof(DeleteCountry)}");
-			return StatusCode(500, "Internal Server Error. Please Try Again Later.");
-		}
+		
 	}
 }
